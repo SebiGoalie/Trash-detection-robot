@@ -1,11 +1,7 @@
-
-
 import cv2 as cv
+import numpy as np
 
-
-
-cap = cv.VideoCapture(0)
-
+cap = cv.VideoCapture(0, apiPreference=cv.CAP_AVFOUNDATION)
 if not cap.isOpened():
     print("Cannot open camera")
     exit()
