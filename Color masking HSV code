@@ -1,0 +1,71 @@
+import cv2 as cv
+import numpy as np
+
+#callback function --> means nothing will happen 
+def nothing(x):
+    pass
+h_high=179
+s_high=255
+v_high=255
+
+h_low=0
+s_low=0
+v_low=0
+cap = cv.VideoCapture(0)
+ret, frame = cap.read()
+lower_Sand = np.array([h_low,s_low,v_low])
+upper_Sand = np.array([h_high,s_high,v_high])
+
+cv.namedWindow("image", cv.WINDOW_NORMAL)
+cv.createTrackbar('low_SandH', 'image', 0, 179, nothing)
+cv.createTrackbar('high_SandH', 'image',0,179, nothing)
+
+cv.createTrackbar('low_SandS', 'image', 0, 255, nothing)
+cv.createTrackbar('high_SandS', 'image',0,255, nothing)
+
+cv.createTrackbar('low_SandV', 'image', 0, 255, nothing)
+cv.createTrackbar('high_SandV', 'image',0,255, nothing)
+
+if not cap.isOpened():
+    print("Cannot open camera")
+    exit()
+    
+while True:
+    h_low = cv.getTrackbarPos('low_SandH', 'image')
+    h_high = cv.getTrackbarPos('high_SandH', 'image')
+    s_low = cv.getTrackbarPos('low_SandS', 'image')
+    s_high = cv.getTrackbarPos('high_SandS', 'image')
+    v_low = cv.getTrackbarPos('low_SandV', 'image')
+    v_high = cv.getTrackbarPos('high_SandV', 'image')
+    lower_Sand = np.array([h_low,s_low,v_low])
+    upper_Sand = np.array([h_high,s_high,v_high])
+    ret, frame = cap.read()
+    
+    hsv = cv.cvtColor(frame, cv.COLOR_BGR2HSV)
+    
+    mask = cv.inRange(hsv, lower_Sand, upper_Sand)
+    
+    res = cv.bitwise_and(frame, frame, mask = mask)
+    
+    cv.namedWindow("res", cv.WINDOW_NORMAL)
+    #cv.namedWindow("hv", cv.WINDOW_NORMAL)
+    cv.namedWindow("mask", cv.WINDOW_NORMAL)
+    
+    cv.imshow("mask", mask)
+    cv.imshow("hsv", hsv)
+    cv.imshow("res",res)
+    
+    if not ret:
+        print("Can't receive frame")
+        break
+    gray = cv.cvtColor(frame,cv.COLOR_BGR2GRAY)
+   
+    
+
+    #cv.imshow('color',frame)
+    
+    if cv.waitKey(1) & 0xFF == ord('q'):
+        break
+    
+cap.release()
+cv.destroyAllWindows()
